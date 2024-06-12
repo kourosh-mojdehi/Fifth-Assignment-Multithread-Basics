@@ -23,16 +23,49 @@ public class TaskScheduler
 
         @Override
         public void run() {
-            /*
-            TODO
-                Simulate utilizing CPU by sleeping the thread for the specified processingTime
-             */
+            try {
+                Thread.sleep(processingTime);
+            } catch (InterruptedException e) {
+                System.out.println(e.getMessage());
+            }
         }
     }
+    static void bubbleSort(ArrayList<Task> tasks, int n)
+    {
+        int i, j;
+        int temp;
+        boolean swapped;
+        for (i = 0; i < n - 1; i++) {
+            swapped = false;
+            for (j = 0; j < n - i - 1; j++) {
+                if (tasks.get(j).processingTime > tasks.get(j+1).processingTime) {
 
+                    temp = tasks.get(j).processingTime;
+                    tasks.get(j).processingTime = tasks.get(j+1).processingTime;
+                    tasks.get(j+1).processingTime = temp;
+                    swapped = true;
+                }
+            }
+            if (swapped == false)
+                break;
+        }
+    }
     public static ArrayList<String> doTasks(ArrayList<Task> tasks)
     {
         ArrayList<String> finishedTasks = new ArrayList<>();
+        bubbleSort(tasks , tasks.size());
+        for( Task task : tasks){
+            Thread thread = new Thread(task);
+            thread.start();
+            try {
+                thread.join();
+            }
+            catch (InterruptedException e){
+                System.out.println(e.getStackTrace());
+                System.out.println(Thread.currentThread().getName() + " is interrupted");
+            }
+            finishedTasks.add(task.taskName);
+        }
 
         /*
         TODO
@@ -46,6 +79,14 @@ public class TaskScheduler
     }
 
     public static void main(String[] args) {
-        // Test your code here
+        ArrayList<Task> tasks= new ArrayList<>();
+        for(int i =10 ; i>6 ; i--){
+            Task task = new Task("h" , i);
+            tasks.add(task);
+        }
+        bubbleSort(tasks , tasks.size());
+       for (Task task : tasks ){
+           System.out.println(task.processingTime);
+       }
     }
 }
